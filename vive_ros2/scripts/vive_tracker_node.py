@@ -15,9 +15,9 @@ class ViveTrackerNode(Node):
 
     def __init__(self):
         super().__init__('vive_tracker_node')
-        self.declare_parameter('host_ip', '192.168.50.171')
+        self.declare_parameter('host_ip', '192.168.0.200')
         self.declare_parameter('host_port', 8000)
-        self.declare_parameter('tracker_name', 'T_1')
+        self.declare_parameter('tracker_name', 'tracker_1')
         self.declare_parameter('topic', '')
         self.declare_parameter('link_name', 'odom')
         self.declare_parameter('child_link_name', 'tracker_link')
@@ -41,14 +41,16 @@ class ViveTrackerNode(Node):
 
         try:
             self.client_thread.start()
+            self.last_timestamp = None
 
             while rclpy.ok():
                 msg = self.message_queue.get()
 
+                current_time = self.get_clock().now()
+
                 odom_msg = Odometry()
                 odom_msg.header.stamp = self.get_clock().now().to_msg()
                 odom_msg.header.frame_id = self.link_name.get_parameter_value().string_value
-
                 odom_msg.child_frame_id = self.child_link_name.get_parameter_value().string_value
 
                 odom_msg.pose.pose.position.x = msg.x
@@ -68,6 +70,14 @@ class ViveTrackerNode(Node):
                 odom_msg.twist.twist.angular.y = msg.q
                 odom_msg.twist.twist.angular.z = msg.r
 
+                # Add logging to see relative latency
+                # if msg.timestamp != 0:
+                #     if self.last_timestamp is not None:
+                #         time_between_msgs = (msg.timestamp - self.last_timestamp) * 1000  # ms
+                #         self.get_logger().info(f'Time between messages: {time_between_msgs:.2f} ms')
+                #     self.last_timestamp = msg.timestamp
+                
+                
                 self.odom_pub.publish(odom_msg)
 
         finally:
