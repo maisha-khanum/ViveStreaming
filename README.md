@@ -1,4 +1,4 @@
-# vive_ros2
+# ViveStreaming
 Code for using the HTC vive tracking system with ROS2. Currently, this package only 
 supports the HTC Vive tracker although tracking other devices like the tracking references (base stations), 
 controllers, and headset should not require much code modification. Contributions are welcome. 
