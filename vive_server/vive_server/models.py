@@ -17,6 +17,7 @@ class Configuration(BaseModel):
 
 
 class ViveDynamicObjectMessage(BaseModel):
+    timestamp: float = Field(default=0)
     valid: int = Field(default=0)
     x: float = Field(default=0)
     y: float = Field(default=0)
